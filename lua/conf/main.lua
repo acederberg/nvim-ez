@@ -1,0 +1,11 @@
+require("conf.global")
+keymap_helpers = require("conf.keymap")
+
+
+-- NOTE: These must occur in this specific order since changing the colorscheme
+--       cancles out any existing transperency.
+require("lazy").setup("plugins", {})
+
+vim.cmd("colorscheme kanagawa")
+keymap_helpers.background_transp()
+

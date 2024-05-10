@@ -1,7 +1,6 @@
-
 return {
-
-  { -- directly open ipynb files as quarto docuements
+  { 
+    -- directly open ipynb files as quarto docuements
     -- and convert back behind the scenes
     -- needs:
     -- pip install jupytext

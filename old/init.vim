@@ -223,36 +223,6 @@ lua <<EOF
   -- vim.o.updatetime = 10
   -- vim.cmd [[autocmd CursorHold,CursorHoldI * lua vim.diagnostic.open_float(nil, {focus=false})]]
 
-  vim.diagnostic.config({
-    virtual_text={
-      source=true,
-    },
-    open_float={
-      source=true,
-    },
-    severity_sort=true,
-  })
-  opts_open_float=nil
-
-  -- https://neovim.io/doc/user/diagnostic.html#vim.diagnostic.open_float()
-  function diagnostic_show()
-    vim.diagnostic.open_float(opts_open_float, {focus=false})
-    return
-  end
-
-  -- https://neovim.io/doc/user/diagnostic.html#vim.diagnostic.goto_next()
-  function diagnostic_next()
-    vim.diagnostic.goto_next(opts_open_float)
-  end
-
-  function diagnostic_prev()
-    vim.diagnostic.goto_prev(opts_open_float)
-  end
-
-  vim.keymap.set({"i", "n", "v"}, "@@!", diagnostic_show)
-  vim.keymap.set({"i", "n", "v"}, "@@n", diagnostic_next)
-  vim.keymap.set({"i", "n", "v"}, "@@N", diagnostic_prev)
-
 
   -- ==========================================================================
   -- LSP Config for GO
@@ -327,8 +297,6 @@ EOF
 " =============================================================================
 " VIMSCRIPT
 
-packadd packer.nvim
-
 nnoremap &a :call<SPACE>SourceConfig()<CR>
 
 
@@ -343,22 +311,6 @@ hi! Normal ctermbg=NONE guibg=NONE
 hi! NonText ctermbg=NONE guibg=NONE
 
 
-" Tabs
-
-inoremap `t <ESC>:tabnext<CR>
-nnoremap `t <ESC>:tabnext<CR>
-inoremap &t <ESC>:tabprevious<CR>
-nnoremap &t <ESC>:tabprevious<CR>
-
-
-" Tagbar
-
-inoremap `d <ESC>:TagbarToggle<CR>
-nnoremap `d <ESC>:TagbarToggle<CR>
-inoremap `e <ESC>:TagbarJumpNext<CR>
-nnoremap `e <ESC>:TagbarJumpNext<CR>
-inoremap &e <ESC>:TagbarJumpPrev<CR>
-nnoremap &e <ESC>:TagbarJumpPrev<CR>
 
 
 " -----------------------------------------------------------------------------
@@ -375,15 +327,3 @@ let g:airline_theme='wombat'
 
 
 
-" ----------------------------------------------------------------------------
-"  Whatever the hell
-
-if (!exists('*SourceConfig'))
-  function SourceConfig() abort
-    for f in split(glob('~/.config/nvim/autoload/*'), '\n')
-      exe 'source' f
-    endfor
-
-    source $MYVIMRC
-  endfunction
-endif
