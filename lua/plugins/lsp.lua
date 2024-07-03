@@ -67,6 +67,7 @@ return {
           "shfmt",
           "isort",
           "tree-sitter-cli",
+          "ruff_lsp",
         },
       })
 
@@ -208,6 +209,13 @@ return {
               enable = true,
               url = "",
             },
+          },
+        },
+      })
+      lspconfig.ruff_lsp.setup({
+        init_options = {
+          settings = {
+            args = {},
           },
         },
       })

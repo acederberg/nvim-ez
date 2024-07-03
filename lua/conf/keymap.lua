@@ -31,6 +31,35 @@ vmap(">", ">gv")
 vmap("<", "<gv")
 
 -------------------------------------------------------------------------------
+-- NOTE: Docker Commands
+
+-- NOTE: This command is biased in that I tend to structure things this way
+--       to keep things organized. This also assumes that your compose project
+--       provides a container named ``server``.
+local captura_cmd = [[
+    term://docker compose --file docker/docker-compose.yaml exec server bash
+    set nonumber
+    startinsert
+  ]]
+
+vim.api.nvim_create_user_command("CapturaServer", "edit" .. captura_cmd, {})
+vim.api.nvim_create_user_command("CapturaServerSplit", "split" .. captura_cmd, {})
+vim.api.nvim_create_user_command("CapturaServerSplitVertical", "vsplit" .. captura_cmd, {})
+vim.api.nvim_create_user_command("ShMysql", "split term://mysqlsh<CR>i", {})
+vim.api.nvim_create_user_command(
+  "Captura",
+  [[
+    edit term://docker compose --file docker/docker-compose.yaml exec server bash
+    set nonumber
+    split term://docker compose --file docker/docker-compose.yaml exec server bash
+    set nonumber
+    startinsert
+  ]],
+  {}
+)
+vim.keymap.set("t", "<ESC>", "<C-\\><C-n>")
+
+-------------------------------------------------------------------------------
 -- NOTE: Diagnostics.
 
 vim.diagnostic.config({
@@ -47,7 +76,6 @@ local opts_open_float = nil
 -- https://neovim.io/doc/user/diagnostic.html#vim.diagnostic.open_float()
 local function diagnostic_show()
   vim.diagnostic.open_float(opts_open_float, { focus = false })
-  return
 end
 
 -- https://neovim.io/doc/user/diagnostic.html#vim.diagnostic.goto_next()
