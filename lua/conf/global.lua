@@ -1,5 +1,6 @@
 -- NOTE: Options and global settings will be included in this module.
 --
+vim.g.leader = ";"
 vim.opt.autochdir = true
 vim.opt.shiftwidth = 2
 vim.opt.tabstop = 2

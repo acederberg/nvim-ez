@@ -6,6 +6,7 @@ return {
   },
   {
     "jmbuhr/otter.nvim",
+    tag="v1.15.1",
     dependencies = {
       {
         "neovim/nvim-lspconfig",
@@ -34,6 +35,7 @@ return {
   },
   {
     "neovim/nvim-lspconfig",
+    tag="v0.1.9",
     dependencies = {
       { "williamboman/mason.nvim" },
       { "williamboman/mason-lspconfig.nvim" },
@@ -62,12 +64,14 @@ return {
       })
       require("mason-tool-installer").setup({
         ensure_installed = {
+          "mypy",
           "black",
           "stylua",
           "shfmt",
           "isort",
           "tree-sitter-cli",
           "ruff_lsp",
+          "jupytext",
         },
       })
 
@@ -184,6 +188,7 @@ return {
         flags = lsp_flags,
         filetypes = { "sh", "bash" },
       })
+      -- lspconfig.quarto.setup()
 
       lspconfig.cssls.setup({
         capabilities = capabilities,
@@ -212,6 +217,7 @@ return {
           },
         },
       })
+
       lspconfig.ruff_lsp.setup({
         init_options = {
           settings = {
@@ -219,6 +225,7 @@ return {
           },
         },
       })
+      -- lspconfig.mypy.setup({})
 
       lspconfig.dotls.setup({
         capabilities = capabilities,
@@ -229,6 +236,42 @@ return {
         capabilities = capabilities,
         flags = lsp_flags,
         filetypes = { "js", "javascript", "typescript", "ojs" },
+      })
+
+      lspconfig.gopls.setup({
+        -- on_attach = on_attach,
+        capabilities = capabilities,
+        cmd = { "gopls" },
+        filetypes = { "go", "gomod", "gowork", "gotmpl" },
+        root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+        settings = {
+          gopls = {
+            completeUnimported = true,
+            usePlaceholders = true,
+            analyses = {
+              unusedparams = true,
+            },
+          },
+        },
+      })
+
+      lspconfig.pylsp.setup({
+        settings = {
+          pylsp = {
+            plugins = {
+              pycodestyle = { enabled = false },
+              -- type checker
+              pylsp_mypy = {
+                enabled = true,
+                report_progess = true,
+              },
+              -- auto-completion options
+              jedi_completion = { enabled = true, fuzzy = true },
+              -- import sorting
+              pyls_isort = { enabled = true },
+            },
+          },
+        },
       })
 
       local function get_quarto_resource_path()
