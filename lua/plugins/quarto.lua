@@ -2,12 +2,25 @@ return {
   { -- requires plugins in lua/plugins/treesitter.lua and lua/plugins/lsp.lua
     -- for complete functionality (language features)
     "quarto-dev/quarto-nvim",
-    tag="v0.18.2",
     ft = { "quarto" },
     dev = false,
     opts = {
       lspFeatures = {
-        languages = { "r", "python", "julia", "bash", "lua", "html", "dot", "javascript", "typescript", "ojs" },
+        languages = {
+          "r",
+          "python",
+          "julia",
+          "bash",
+          "lua",
+          "html",
+          "dot",
+          -- "mermaid",
+          "javascript",
+          "typescript",
+          "ojs",
+          "yaml",
+          "json",
+        },
       },
       codeRunner = {
         enabled = true,

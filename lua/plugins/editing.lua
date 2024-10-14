@@ -17,22 +17,32 @@ return {
     enabled = true,
     config = function()
       -------------------------------------------------------------------------
-      require("conform").setup({
+      local conform = require("conform")
+      conform.setup({
         notify_on_error = false,
         format_on_save = {
           timeout_ms = 500,
           lsp_fallback = true,
         },
-        -- Look at this extremely obscure blog post: https://vm70.neocities.org/posts/2024-04-11-quarto-prettier/
         formatters_by_ft = {
           lua = { "mystylua" },
           python = { "isort", "black" },
-          quarto = { "prettier" },
+          quarto = { "injected", "prettier" },
+          json = { "jq" },
+          yaml = { "yamlfix" },
+          toml = { "prettier" },
         },
         formatters = {
           mystylua = {
             command = "stylua",
             args = { "--indent-type", "Spaces", "--indent-width", "2", "-" },
+          },
+          prettier = {
+            options = {
+              ext_parsers = {
+                qmd = "markdown",
+              },
+            },
           },
         },
       })
@@ -56,16 +66,12 @@ return {
       })
 
       -------------------------------------------------------------------------
-      -- NOTE: Customize the "injected" formatter. See
-      --
-      --       .. code:: txt
-      --
-      --          https://github.com/jmbuhr/uarto-nvim-kickstarter/blob/main/lua/plugins/editing.lua
-      --
-      require("conform").formatters.injected = {
-        -- NOTE: Set the options field
+      -- NOTE: Customize the "injected" formatter.
+      --       Based on https://github.com/jmbuhr/uarto-nvim-kickstarter/blob/main/lua/plugins/editing.lua
+      --       Look at this extremely obscure blog post: https://vm70.neocities.org/posts/2024-04-11-quarto-prettier/
+      --       And this github issue: https://github.com/jmbuhr/otter.nvim/issues/140
+      conform.formatters.injected = {
         options = {
-          -- NOTE: Set to true to ignore errors
           ignore_errors = false,
           -- NOTE: Map of treesitter language to file extension A temporary
           --       file name with this extension will be generated during
@@ -85,9 +91,11 @@ return {
             r = "r",
             typescript = "ts",
           },
-          -- Map of treesitter language to formatters to use
-          -- (defaults to the value from formatters_by_ft)
-          lang_to_formatters = {},
+          lang_to_formatters = {
+            python = { "black", "isort" },
+            json = { "jq" },
+            yaml = { "yamlfix" },
+          },
         },
       }
     end,

@@ -5,7 +5,7 @@ return {
   },
   run = ":TSUpdate",
   config = function()
-    require("nvim-treesitter.configs").setup({
+    local config = {
       ensure_installed = {
         "python",
         "markdown",
@@ -21,11 +21,12 @@ return {
         "lua",
         "vim",
         "embedded_template",
+        "mermaid",
+        "dot",
       },
       embedded_template = { enable = true },
       highlight = {
         enable = true,
-        custom_captures = { ["import_statement"] = "pythonDecorators" },
       },
       indent = { enable = true },
       playground = {
@@ -46,6 +47,7 @@ return {
           show_help = "?",
         },
       },
-    })
+    }
+    require("nvim-treesitter.configs").setup(config)
   end,
 }

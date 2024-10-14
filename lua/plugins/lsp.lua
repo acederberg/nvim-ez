@@ -1,12 +1,12 @@
 return {
   {
     "nvim-telescope/telescope.nvim",
-    tag = "0.1.6",
+    -- tag = "0.1.6",
     dependencies = { "nvim-lua/plenary.nvim" },
   },
   {
     "jmbuhr/otter.nvim",
-    tag="v1.15.1",
+    -- tag="v1.15.1",
     dependencies = {
       {
         "neovim/nvim-lspconfig",
@@ -20,22 +20,43 @@ return {
       --       loaded.
       local otter = require("otter")
       otter.setup({
-        lsp = {
-          hover = {
-            -- border = require('misc.style').border.
-          },
-        },
+        diagnostics_update_events = { "InsertLeave" },
         buffers = {
           set_filetype = true,
           write_to_disk = false,
         },
         handle_leading_whitespace = true,
       })
+
+      -- NOTE: From the readme. This can be used to show the current languages
+      --       in the raft.
+      local ms = vim.lsp.protocol.Methods
+      local function get_otter_symbols_lang()
+        local otterkeeper = require("otter.keeper")
+        local main_nr = vim.api.nvim_get_current_buf()
+        local langs = {}
+        for i, l in ipairs(otterkeeper.rafts[main_nr].languages) do
+          langs[i] = i .. ": " .. l
+        end
+        -- promt to choose one of langs
+        local i = vim.fn.inputlist(langs)
+        local lang = otterkeeper.rafts[main_nr].languages[i]
+        local params = {
+          textDocument = vim.lsp.util.make_text_document_params(),
+          otter = {
+            lang = lang,
+          },
+        }
+        -- don't pass a handler, as we want otter to use its own handlers
+        vim.lsp.buf_request(main_nr, ms.textDocument_documentSymbol, params, nil)
+      end
+
+      vim.keymap.set("n", "@@os", get_otter_symbols_lang, { desc = "otter [s]ymbols" })
     end,
   },
   {
     "neovim/nvim-lspconfig",
-    tag="v0.1.9",
+    -- tag="v0.1.9",
     dependencies = {
       { "williamboman/mason.nvim" },
       { "williamboman/mason-lspconfig.nvim" },
@@ -50,12 +71,6 @@ return {
       { "folke/neoconf.nvim", opts = {}, enabled = false },
     },
     config = function()
-      -------------------------------------------------------------------------
-      -- NOTE: Setup and activae otter.
-      -- local otter = require 'otter'
-      -- otter.setup()
-      -- otter.activate({ 'python', 'javascript' }, true, true, nil)
-
       -------------------------------------------------------------------------
       -- NOTE: Install dependencies.
       require("mason").setup()
@@ -72,6 +87,9 @@ return {
           "tree-sitter-cli",
           "ruff_lsp",
           "jupytext",
+          "yamlfix",
+          "jq",
+          "prettier", -- If you want plugins, they must be installed locallaly. https://github.com/williamboman/mason.nvim/issues/392
         },
       })
 
@@ -188,7 +206,6 @@ return {
         flags = lsp_flags,
         filetypes = { "sh", "bash" },
       })
-      -- lspconfig.quarto.setup()
 
       lspconfig.cssls.setup({
         capabilities = capabilities,
@@ -232,7 +249,7 @@ return {
         flags = lsp_flags,
       })
 
-      lspconfig.tsserver.setup({
+      lspconfig.ts_ls.setup({
         capabilities = capabilities,
         flags = lsp_flags,
         filetypes = { "js", "javascript", "typescript", "ojs" },
@@ -447,6 +464,8 @@ return {
         },
       })
 
+      luasnip.filetype_extend("quarto", { "markdown", "markdown_inline" })
+      luasnip.filetype_extend("rmarkdown", { "markdown", "markdown_inline" })
       -- `:` cmdline setup.
       -- cmp.setup.cmdline(":", {
       --   mapping = cmp.mapping.preset.cmdline(),

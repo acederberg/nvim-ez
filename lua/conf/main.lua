@@ -6,6 +6,5 @@ local keymap_helpers = require("conf.keymap")
 require("lazy").setup("plugins", {})
 vim.cmd("colorscheme kanagawa")
 
-
 -- vim.treesitter.language.add(
 keymap_helpers.background_transp()
