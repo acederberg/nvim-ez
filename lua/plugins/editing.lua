@@ -44,6 +44,7 @@ return {
           json = { "jq" },
           yaml = { "yamlfmt" },
           toml = { "prettier" },
+          md = { "injected", "pettier" },
         },
         formatters = {
           mystylua = {
@@ -108,6 +109,7 @@ return {
             python = { "black", "isort" },
             json = { "jq" },
             yaml = { "yamlfmt" },
+            lua = { "mystylua" },
           },
         },
       }
