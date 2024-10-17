@@ -1,0 +1,24 @@
+# NOTE: This is only a preview, and should be rendered by an action using the
+#       builder for my blog. More or less, on build time, this should be
+#       grabbed and put into the quarto project in the appropriate locations so
+#       that it may be listed and rendered.
+#       This means that the project configuration here is not considered in the 
+#       websites rendering.
+project:
+  type: website
+  output-dir: build
+  preview:
+    host: localhost
+    port: 3001
+    browser: false
+website:
+  title: README preview
+  site-url: https://acederberg.io/projects/nvim
+  description: acederberg's blog.
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+format:
+  html:
+    theme: cosmo
