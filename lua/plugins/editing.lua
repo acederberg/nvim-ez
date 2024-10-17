@@ -1,5 +1,18 @@
 return {
   {
+    "johnfrankmorgan/whitespace.nvim",
+    config = function()
+      require("whitespace-nvim").setup({
+        highlight = "DiffDelete",
+        ignored_filetypes = { "TelescopePrompt", "Trouble", "help", "dashboard" },
+        ignore_terminal = true,
+        return_cursor = true,
+      })
+      -- remove trailing whitespace with a keybinding
+      vim.keymap.set("n", "@@wt", require("whitespace-nvim").trim)
+    end,
+  },
+  {
     "numToStr/Comment.nvim",
     -- NOTE: Disable these settings so that toggling can be defined directly.
     opts = {
@@ -29,7 +42,7 @@ return {
           python = { "isort", "black" },
           quarto = { "injected", "prettier" },
           json = { "jq" },
-          yaml = { "yamlfix" },
+          yaml = { "yamlfmt" },
           toml = { "prettier" },
         },
         formatters = {
@@ -94,7 +107,7 @@ return {
           lang_to_formatters = {
             python = { "black", "isort" },
             json = { "jq" },
-            yaml = { "yamlfix" },
+            yaml = { "yamlfmt" },
           },
         },
       }

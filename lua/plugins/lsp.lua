@@ -87,7 +87,7 @@ return {
           "tree-sitter-cli",
           "ruff_lsp",
           "jupytext",
-          "yamlfix",
+          "yamlfmt",
           "jq",
           "prettier", -- If you want plugins, they must be installed locallaly. https://github.com/williamboman/mason.nvim/issues/392
         },
