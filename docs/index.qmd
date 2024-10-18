@@ -4,12 +4,13 @@ format:
   gfm:
     preview-mode: raw
   html: default
-date-updated: 10-17-2024
+date-updated: 10-18-2024
 ---
 
 Thank you to [quarto-nvim-kickstarter](https://github.com/jmbuhr/quarto-nvim-kickstarter)
-for giving me some ideas where to start with nvim!
-This is a mix of the kick-starter and my already existing configuration.
+for giving me some ideas where to start with quarto in nvim!
+
+This is a mix of things incorporated from the kick-starter and my already existing configuration.
 
 ## Features
 
@@ -60,3 +61,13 @@ echo "source ~/.config/nvim/<repo-name>/init.lua" >> init.lua
 #### Python code highlighting.
 
 ![Python code highlighting](./gallery/py.png)
+
+## Adding to Documentation
+
+It is important to note that all changes to docs should be pulled into the `docs`
+branch. The docs branch was created using `filter-branch` as follows:
+
+```sh
+git checkout -b docs
+git filter-branch --prune-empty --subdirectory-filter docs HEAD
+```
