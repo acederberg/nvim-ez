@@ -1,15 +1,11 @@
-# NOTE: This is only a preview, and should be rendered by an action using the
-#       builder for my blog. More or less, on build time, this should be
-#       grabbed and put into the quarto project in the appropriate locations so
-#       that it may be listed and rendered.
-#       This means that the project configuration here is not considered in the 
-#       websites rendering.
+# NOTE: This configuration is important to the blog, ``output-dir`` should not
+#       be configured so that builds work right in the blog.
 project:
   type: website
-  output-dir: build
+  # output-dir: build # 
   preview:
     host: localhost
-    port: 3001
+    port: 3000
     browser: false
 website:
   title: README preview
