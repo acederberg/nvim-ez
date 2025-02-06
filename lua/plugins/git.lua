@@ -1,4 +1,11 @@
 return {
+  {
+    "lewis6991/gitsigns.nvim",
+    requires = { "nvim-lua/plenary.nvim" },
+    config = function()
+      require("gitsigns").setup()
+    end,
+  },
   { "sindrets/diffview.nvim" },
   { "nvim-tree/nvim-web-devicons" },
   {
@@ -10,7 +17,7 @@ return {
     },
     config = function()
       require("neogit").setup({
-        disable_commit_confirmation = true,
+        kind = "split",
         integrations = {
           diffview = true,
         },

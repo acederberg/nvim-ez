@@ -7,6 +7,8 @@ return {
   config = function()
     local config = {
       ensure_installed = {
+        "comment",
+        "hcl",
         "python",
         "markdown",
         "markdown_inline",
@@ -29,6 +31,15 @@ return {
         enable = true,
       },
       indent = { enable = true },
+      textobjects = {
+        select = {
+          enable = true,
+          lookahead = true,
+        },
+      },
+      query_linter = {
+        enable = true,
+      },
       playground = {
         enable = true,
         disable = {},

@@ -20,17 +20,30 @@ return {
       --       loaded.
       local otter = require("otter")
       otter.setup({
-        diagnostics_update_events = { "InsertLeave" },
-        buffers = {
-          set_filetype = true,
-          write_to_disk = false,
-        },
-        handle_leading_whitespace = true,
+        -- debug = true,
+        -- buffers = { write_to_disk = true, set_filetype = true },
+        -- verbose = { -- set to false to disable all verbose messages
+        --   no_code_found = true, -- warn if otter.activate is called, but no injected code was found
+        -- },
       })
+      -- lsp = {
+      --   diagnostics_update_events = { "BuffWritePost" },
+      --   root_dir = function(_, bufnr)
+      --     return vim.fs.root(bufnr or 0, {
+      --       ".git",
+      --       "_quarto.yml",
+      --       "package.json",
+      --     }) or vim.fn.getcwd(0)
+      --   end,
+      -- },
+      -- buffers = {
+      --   set_filetype = true,
+      --   write_to_disk = false,
+      -- },
+      -- handle_leading_whitespace = true,
 
       -- NOTE: From the readme. This can be used to show the current languages
       --       in the raft.
-      local ms = vim.lsp.protocol.Methods
       local function get_otter_symbols_lang()
         local otterkeeper = require("otter.keeper")
         local main_nr = vim.api.nvim_get_current_buf()
@@ -38,20 +51,10 @@ return {
         for i, l in ipairs(otterkeeper.rafts[main_nr].languages) do
           langs[i] = i .. ": " .. l
         end
-        -- promt to choose one of langs
-        local i = vim.fn.inputlist(langs)
-        local lang = otterkeeper.rafts[main_nr].languages[i]
-        local params = {
-          textDocument = vim.lsp.util.make_text_document_params(),
-          otter = {
-            lang = lang,
-          },
-        }
-        -- don't pass a handler, as we want otter to use its own handlers
-        vim.lsp.buf_request(main_nr, ms.textDocument_documentSymbol, params, nil)
+        vim.print("langs", langs)
       end
 
-      vim.keymap.set("n", "@@os", get_otter_symbols_lang, { desc = "otter [s]ymbols" })
+      vim.keymap.set("n", "@@ps", get_otter_symbols_lang, { desc = "otter [s]ymbols" })
     end,
   },
   {
@@ -85,10 +88,11 @@ return {
           "shfmt",
           "isort",
           "tree-sitter-cli",
-          "ruff_lsp",
+          "ruff",
           "jupytext",
           "yamlfmt",
           "jq",
+          -- "magick",
           "prettier", -- If you want plugins, they must be installed locallaly. https://github.com/williamboman/mason.nvim/issues/392
         },
       })
@@ -234,14 +238,13 @@ return {
           },
         },
       })
-
-      lspconfig.ruff_lsp.setup({
-        init_options = {
-          settings = {
-            args = {},
-          },
-        },
-      })
+      -- lspconfig.ruff.setup({
+      --   init_options = {
+      --     settings = {
+      --       args = {},
+      --     },
+      --   },
+      -- })
       -- lspconfig.mypy.setup({})
 
       lspconfig.dotls.setup({
@@ -272,24 +275,25 @@ return {
         },
       })
 
-      lspconfig.pylsp.setup({
-        settings = {
-          pylsp = {
-            plugins = {
-              pycodestyle = { enabled = false },
-              -- type checker
-              pylsp_mypy = {
-                enabled = true,
-                report_progess = true,
-              },
-              -- auto-completion options
-              jedi_completion = { enabled = true, fuzzy = true },
-              -- import sorting
-              pyls_isort = { enabled = true },
-            },
-          },
-        },
-      })
+      -- turning this on breaks python diagnostics in nvim.
+      -- lspconfig.pylsp.setup({
+      --   settings = {
+      --     pylsp = {
+      --       plugins = {
+      --         pycodestyle = { enabled = false },
+      --         -- type checker
+      --         pylsp_mypy = {
+      --           enabled = true,
+      --           report_progess = true,
+      --         },
+      --         -- auto-completion options
+      --         jedi_completion = { enabled = true, fuzzy = true },
+      --         -- import sorting
+      --         pyls_isort = { enabled = true },
+      --       },
+      --     },
+      --   },
+      -- })
 
       local function get_quarto_resource_path()
         local function strsplit(s, delimiter)
@@ -343,6 +347,8 @@ return {
             or util.path.dirname(fname)
         end,
       })
+
+      lspconfig.somesass_ls.setup({})
     end,
   },
   -------------------------------------------------------------------------
@@ -429,7 +435,7 @@ return {
           }),
         },
         sources = {
-          { name = "otter" }, -- for code chunks in quarto
+          -- { name = "otter" }, -- for code chunks in quarto
           { name = "path" },
           { name = "nvim_lsp" }, -- NOTE: Not loading. Why?
           { name = "nvim_lsp_signature_help" },

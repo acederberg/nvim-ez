@@ -38,13 +38,14 @@ return {
           lsp_fallback = true,
         },
         formatters_by_ft = {
+          html = { "prettier" },
           lua = { "mystylua" },
           python = { "isort", "black" },
           quarto = { "injected", "prettier" },
           json = { "jq" },
           yaml = { "yamlfmt" },
           toml = { "prettier" },
-          md = { "injected", "pettier" },
+          md = { "injected", "prettier" },
         },
         formatters = {
           mystylua = {

@@ -14,3 +14,8 @@ vim.opt.rtp:prepend(lazypath)
 
 -- NOTE: Modules are included with their lazy installs (in the plugins folder).
 require 'conf.main'
+
+-- Example in Lua
+vim.cmd [[
+  highlight link @docstring.restructuredtext Comment
+]]
