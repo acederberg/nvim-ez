@@ -13,4 +13,5 @@ vim.opt.cc = "80"
 
 vim.cmd([[
  	set nowrap
+  set spell
 ]])
