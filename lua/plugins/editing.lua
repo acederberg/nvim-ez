@@ -1,15 +1,30 @@
 return {
   {
     "johnfrankmorgan/whitespace.nvim",
+    dependencies = {
+      "folke/which-key.nvim",
+    },
     config = function()
-      require("whitespace-nvim").setup({
+      local wk = require("which-key")
+      local ws = require("whitespace-nvim")
+
+      ws.setup({
         highlight = "DiffDelete",
         ignored_filetypes = { "TelescopePrompt", "Trouble", "help", "dashboard" },
         ignore_terminal = true,
         return_cursor = true,
       })
+
       -- remove trailing whitespace with a keybinding
-      vim.keymap.set("n", "@@wt", require("whitespace-nvim").trim)
+      wk.add({
+        { "@@w", group = "[w]hitespace." },
+        {
+          "@@wt",
+          ws.trim,
+          mode = "n",
+          desc = "[w]hitespace [t]rim.",
+        },
+      })
     end,
   },
   {
@@ -116,4 +131,15 @@ return {
       }
     end,
   },
+  --[[ {
+    "kylechui/nvim-surround",
+    version = "^3.0.0", -- Use for stability; omit to use `main` branch for the latest features
+    event = "VeryLazy",
+    config = function()
+      local surround = require("nvim-surround")
+      local wk = require("which-key")
+
+      surround.setup({})
+    end
+  } ]]
 }

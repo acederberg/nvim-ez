@@ -26,3 +26,17 @@ else do
    mdkir ~/.config/nvim
    git clone <repo_url> ~/.config/nvim
    echo "source ~/.config/nvim/<repo-name>/init.lua" >> init.lua
+
+
+Dotnet
+===============================================================================
+
+Configuring dotnet to work nicely can be a pain. A few things work very well:
+
+- LSP Omnisharp
+- Neotest
+
+A few things are not quite working yet:
+
+- charp.nvim
+- xunit.nvim

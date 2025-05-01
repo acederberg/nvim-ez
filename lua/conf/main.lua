@@ -5,8 +5,12 @@ local keymap_helpers = require("conf.keymap")
 --       cancles out any existing transperency.
 require("lazy").setup("plugins", {})
 vim.cmd.colorscheme("gruvbox-material")
-keymap_helpers.background_transp()
 vim.opt.colorcolumn = "80"
+
+vim.cmd([[
+hi! Normal ctermbg=NONE guibg=NONE
+hi! NonText ctermbg=NONE guibg=NONE
+]])
 
 ---@alias CodeFenceHLData {language: string, start: number, stop: number, }
 ---@alias CodeFenceHLOptions {hl_group: string, codefence_language: string, include_delim: boolean, hl: table}

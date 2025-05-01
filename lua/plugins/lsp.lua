@@ -76,7 +76,7 @@ return {
         vim.print("langs", langs)
       end
 
-      vim.keymap.set("n", "@@ps", get_otter_symbols_lang, { desc = "otter [s]ymbols" })
+      -- vim.keymap.set("n", "@@ps", get_otter_symbols_lang, { desc = "otter [s]ymbols" })
     end,
   },
   {
@@ -94,10 +94,13 @@ return {
       },
       { "folke/neodev.nvim", opts = {}, enabled = true },
       { "folke/neoconf.nvim", opts = {}, enabled = false },
+      "folke/which-key.nvim",
     },
     config = function()
       -------------------------------------------------------------------------
       -- NOTE: Install dependencies.
+      local wk = require("which-key")
+
       require("mason").setup()
       require("mason-lspconfig").setup({
         automatic_installation = true,
@@ -111,6 +114,7 @@ return {
           "isort",
           "tree-sitter-cli",
           "ruff",
+          "terraform-ls",
           "jupytext",
           "yamlfmt",
           "jq",
@@ -142,6 +146,16 @@ return {
             vim.keymap.set("n", keys, func, { buffer = event.buf, desc = "LSP: " .. desc })
           end
 
+          vim.diagnostic.config({
+            virtual_text = {
+              source = true,
+            },
+            open_float = {
+              source = true,
+            },
+            severity_sort = true,
+          })
+
           local client = vim.lsp.get_client_by_id(event.data.client_id)
           assert(client, "LSP client not found")
 
@@ -151,16 +165,39 @@ return {
           map("gS", telescope.lsp_document_symbols, "[g]o so [S]ymbols")
           map("gD", telescope.lsp_type_definitions, "[g]o to type [D]efinition")
           map("gd", telescope.lsp_definitions, "[g]o to [d]efinition")
-          map("K", "<cmd>lua vim.lsp.buf.hover()<CR>", "[K] hover documentation")
-          map("gh", "<cmd>lua vim.lsp.buf.signature_help()<CR>", "[g]o to signature [h]elp")
-          map("gI", telescope.lsp_implementations, "[g]o to [I]mplementation")
-          map("gr", telescope.lsp_references, "[g]o to [r]eferences")
-          map("[d", vim.diagnostic.goto_prev, "previous [d]iagnostic ")
-          map("]d", vim.diagnostic.goto_next, "next [d]iagnostic ")
-          map("<leader>ll", vim.lsp.codelens.run, "[l]ens run")
-          map("<leader>lR", vim.lsp.buf.rename, "[l]sp [R]ename")
-          map("<leader>lf", vim.lsp.buf.format, "[l]sp [f]ormat")
-          map("<leader>lq", vim.diagnostic.setqflist, "[l]sp diagnostic [q]uickfix")
+
+          wk.add({
+            -- lsp
+            {
+              { "@@l", group = "[l]sp" },
+              {
+                { "@@lg", group = "[l]sp [g]o." },
+                { "@@lgi", telescope.lsp_implementations, desc = "[l]sp [g]o to [I]mplementation", mode = "in" },
+                { "@@lgr", telescope.lsp_references, desc = "[l]sp [g]o to [r]eferences", mode = "in" },
+              },
+              { "@@lsd", "<cmd>lua vim.lsp.buf.hover()<CR>", desc = "[l]sp [s]how [d]ocumentation", mode = "in" },
+              {
+                "@@lsh",
+                function()
+                  vim.lsp.buf.signature_help()
+                end,
+                desc = "[l]sp [s]ignature [h]elp",
+                mode = "in",
+              },
+              { "@@ll", vim.lsp.codelens.run, desc = "[l]sp [l]ens run", mode = "in" },
+              { "@@lr", vim.lsp.buf.rename, desc = "[l]sp [r]ename", mode = "in" },
+              { "@@lf", vim.lsp.buf.format, desc = "[l]sp [f]ormat", mode = "in" },
+            },
+            -- diagnostics
+            {
+              { "@@d", group = "[d]iagnostic" },
+              { "@@dn", vim.diagnostic.goto_next, desc = "[d]iagnostic [n]ext", mode = "in" },
+              { "@@dp", vim.diagnostic.goto_prev, desc = "[d]iagnostic [p]rev", mode = "in" },
+              { "@@ds", vim.diagnostic.open_float, desc = "[d]iagnostic [s]how", mode = "in" },
+              { "@@df", vim.diagnostic.setqflist, desc = "[l]sp diagnostic [q]uickfix", mode = "in" },
+              -- { "@@lds", telescope.diagnostics, desc = "[d]iagnositics [s]how", mode = "in" },
+            },
+          })
         end,
       })
 
@@ -260,6 +297,12 @@ return {
         flags = lsp_flags,
         settings = {
           yaml = {
+            schemas = {
+              kubernetes = "*.yaml",
+              ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
+              -- ["../path/relative/to/file.yml"] = "/.github/workflows/*",
+              -- ["/path/from/root/of/project"] = "/.github/workflows/*",
+            },
             schemaStore = {
               enable = true,
               url = "",
@@ -284,8 +327,10 @@ return {
       lspconfig.ts_ls.setup({
         capabilities = capabilities,
         flags = lsp_flags,
-        filetypes = { "js", "javascript", "typescript", "ojs" },
+        filetypes = { "js", "javascript", "typescript", "ojs", "typescriptreact" },
       })
+
+      lspconfig.prismals.setup({})
 
       lspconfig.gopls.setup({
         -- on_attach = on_attach,
@@ -303,6 +348,8 @@ return {
           },
         },
       })
+
+      lspconfig.csharp_ls.setup({})
 
       -- turning this on breaks python diagnostics in nvim.
       -- lspconfig.pylsp.setup({
@@ -489,7 +536,18 @@ return {
           { name = "buffer" },
         }),
       })
+
+      require("lspconfig")["hls"].setup({
+        filetypes = { "haskell", "lhaskell", "cabal" },
+      })
       require("cmp_git").setup()
+      require("lspconfig").terraformls.setup({})
+      vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+        pattern = { "*.tf", "*.tfvars" },
+        callback = function()
+          vim.lsp.buf.format()
+        end,
+      })
 
       -- `/` cmdline setup.
       cmp.setup.cmdline({ "/", "?" }, {
@@ -514,4 +572,69 @@ return {
       -- })
     end,
   },
+  -- {
+  --   "iabdelkareem/csharp.nvim",
+  --   dependencies = {
+  --     "williamboman/mason.nvim", -- Required, automatically installs omnisharp
+  --     "mfussenegger/nvim-dap",
+  --     "Tastyep/structlog.nvim", -- Optional, but highly recommended for debugging
+  --   },
+  --   config = function()
+  --     require("mason")
+  --     local config = {
+  --       logging = {
+  --         level = "TRACE",
+  --       },
+  --       lsp = {
+  --         omnisharp = {
+  --           enable = true,
+  --           enable_editor_config_support = true,
+  --           organize_imports = true,
+  --           load_projects_on_demand = false,
+  --           enable_analyzers_support = true,
+  --           enable_import_completion = true,
+  --           include_prerelease_sdks = true,
+  --           analyze_open_documents_only = false,
+  --           default_timeout = 1000,
+  --           enable_package_auto_restore = true,
+  --           debug = false,
+  --           --- @type string?
+  --           cmd_path = "",
+  --         },
+  --       },
+  --     }
+  --
+  --     -- local cs = require("csharp")
+  --     -- -- ~/.local/state/nvim/csharp.log
+  --     --
+  --     -- local logger = require("structlog").get_logger("csharp_logger")
+  --     -- logger:warn("It works!")
+  --     --
+  --     -- vim.keymap.set("n", "@@dbgr", function()
+  --     --   -- cs.debug_project()
+  --     --   local it = require("csharp.modules.lsp.omnisharp")
+  --     --   it.start_omnisharp(vim.api.nvim_get_current_buf())
+  --     -- end, { desc = "dotnet[dbgr]." })
+  --     --
+  --     -- -- vim.keymap.set("n", "@@cslogs", function()
+  --     -- --   vim.fn.stdpath("log") .. "/csharp.log"
+  --     -- -- end, {desc = ""})
+  --     -- vim.print(config)
+  --
+  --     csharp_config = require("csharp.config")
+  --     config = csharp_config.set_defaults(config)
+  --     csharp_config.save(config)
+  --
+  --     -- vim.print("=-----------------------------------------")
+  --     -- vim.print(csharp_config.get_config())
+  --
+  --     vim.api.nvim_create_autocmd("FileType", {
+  --       pattern = "cs",
+  --       callback = function(args)
+  --         local it = require("csharp.modules.lsp.omnisharp")
+  --         it.setup()
+  --       end,
+  --     })
+  --   end,
+  -- },
 }

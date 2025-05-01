@@ -14,6 +14,7 @@ return {
           "lua",
           "html",
           "dot",
+          "c_sharp",
           -- "mermaid",
           "javascript",
           "typescript",
@@ -82,15 +83,33 @@ return {
     },
     config = function(_, opts)
       require("img-clip").setup(opts)
-      vim.keymap.set("n", "@@ii", ":PasteImage<cr>", { desc = "insert [i]mage from clipboard" })
+      local wk = require("which-key")
+
+      wk.add({
+        { "@@i", group = "[i]mage." },
+        { "@@ii", ":PasteImage<cr>", desc = "[i]mage [i]nsert from clipboard", mode = "n" },
+      })
     end,
   },
 
   { -- preview equations
     "jbyuki/nabla.nvim",
-    keys = {
-      { "@@eq", ':lua require"nabla".toggle_virt()<cr>', desc = "Render TeX [eq]uations" },
-    },
+    ft = { "markdown", "quarto", "latex" },
+    config = function()
+      local wk = require("which-key")
+      local nabla = require("nabla")
+
+      wk.add({
+        { "@@n", group = "[n]abla" },
+        {
+          "@@nr",
+          function()
+            nabla.toggle_virt()
+          end,
+          desc = "Render TeX [eq]uations",
+        },
+      })
+    end,
   },
   {
     "3rd/image.nvim",
@@ -103,6 +122,7 @@ return {
     end,
     dependencies = {
       "leafo/magick", -- that's a lua rock
+      "folke/which-key.nvim",
     },
     config = function()
       -- Requirements
@@ -115,7 +135,9 @@ return {
       -- sudo apt install lua5.1
       -- sudo apt install luajit
 
+      local wk = require("which-key")
       local image = require("image")
+
       image.setup({
         backend = "kitty",
         integrations = {
@@ -171,10 +193,17 @@ return {
           col = 0,
           zindex = 1000,
         })
-        vim.keymap.set("n", "q", function()
-          vim.api.nvim_win_close(win, true)
-          img.global_state.options.max_height_window_percentage = og_max_height
-        end, { buffer = buf })
+
+        wk.add({
+          "@@ix",
+          function()
+            vim.api.nvim_win_close(win, true)
+            img.global_state.options.max_height_window_percentage = og_max_height
+          end,
+          buffer = buf,
+          desc = "[i]mage e[x]it.",
+        })
+
         return { buf = buf, win = win }
       end
 
@@ -188,73 +217,104 @@ return {
         image.hijack_buffer(img.path, preview.win, preview.buf)
       end
 
-      vim.keymap.set("n", "@@io", function()
-        local bufnr = vim.api.nvim_get_current_buf()
-        handle_zoom(bufnr)
-      end, { buffer = true, desc = "image [o]pen" })
-
-      vim.keymap.set("n", "@@ic", clear_all_images, { desc = "image [c]lear" })
+      wk.add({
+        { "@@i", group = "[i]mage." },
+        {
+          "@@io",
+          function()
+            local bufnr = vim.api.nvim_get_current_buf()
+            handle_zoom(bufnr)
+          end,
+          desc = "[i]mage [o]pen.",
+        },
+        { "@@ic", clear_all_images, desc = "[i]mages [c]lear." },
+      })
     end,
   },
   {
     "benlubas/molten-nvim",
+    dependencies = {
+      "folke/which-key.nvim",
+    },
     lazy = false,
     enabled = true,
     build = ":UpdateRemotePlugins",
     init = function()
+      local wk = require("which-key")
       vim.g.molten_image_provider = "image.nvim"
       vim.g.molten_output_win_max_height = 20
       vim.g.molten_auto_open_output = true
 
-      local function initialize_in_venv()
-        local venv = os.getenv("VIRTUAL_ENV") -- or os.getenv("CONDA_PREFIX")
-        if venv ~= nil then
-          venv = string.match(venv, "/.+/(.+)")
-          vim.cmd(("MoltenInit %s"):format(venv))
-        else
-          vim.cmd("MoltenInit python3")
-        end
-      end
-
-      vim.keymap.set("n", "@@mi", initialize_in_venv, { desc = "[m]olten [i]nitialize for python3", silent = true })
+      wk.add({
+        { "@@m", group = "[m]olten" },
+        {
+          "@@mi",
+          function()
+            local venv = os.getenv("VIRTUAL_ENV") -- or os.getenv("CONDA_PREFIX")
+            if venv ~= nil then
+              venv = string.match(venv, "/.+/(.+)")
+              vim.cmd(("MoltenInit %s"):format(venv))
+            else
+              vim.cmd("MoltenInit python3")
+            end
+          end,
+          mode = "n",
+          desc = "[m]olten [i]nitialize for python3.",
+        },
+        {
+          "@@mv",
+          ":<C-u>MoltenEvaluateVisual<cr>",
+          mode = "v",
+          desc = "[m]olten eval [v]isual.",
+        },
+        {
+          "@@mo",
+          ":MoltenEvaluateOperator<CR>",
+          desc = "[m]olten [o]perator evaluate.",
+        },
+        {
+          "@@ml",
+          ":MoltenEvaluateLine<CR>",
+          desc = "[m]olten [l]ine eval.",
+        },
+        {
+          "@@mr",
+          ":MoltenReevaluateCell<CR>",
+          desc = "[m]olten [r]e-evaluate cell.",
+        },
+        {
+          "@@mx",
+          ":MoltenDeinit<CR>",
+          desc = "[m]olten e[x]it.",
+        },
+      })
     end,
-    keys = {
-      -- { "@@mi", ":MoltenInit<cr>", desc = "[m]olten [i]nit" },
-      {
-        "@@mv",
-        ":<C-u>MoltenEvaluateVisual<cr>",
-        mode = "v",
-        desc = "[m]olten eval [v]isual",
-      },
-      {
-        "@@mo",
-        ":MoltenEvaluateOperator<CR>",
-        { silent = true, desc = "[m]olten [o]perator evaluate" },
-      },
-      {
-        "@@ml",
-        ":MoltenEvaluateLine<CR>",
-        { silent = true, desc = "[m]olten [l]ine eval" },
-      },
-      {
-        "@@mm",
-        ":MoltenReevaluateCell<CR>",
-        { silent = true, desc = "[m]olten re-evaluate cell" },
-      },
-      {
-        "@@mx",
-        ":MoltenDeinit<CR>",
-        { silent = true, desc = "[m]olten e[x]it." },
-      },
-    },
   },
   { -- show tree of symbols in the current file
     "hedyhli/outline.nvim",
-    cmd = "Outline",
-    keys = {
-      { "@@oo", ":Outline<cr>", desc = "[o]utline sh[o]w." },
-      { "@@lf", ":OutlineFocusOutline<cr>", desc = "[o]utline [f]ocus." },
-    },
+    dependencies = { "folke/which-key.nvim" },
+    -- cmd = "Outline",
+    config = function()
+      local wk = require("which-key")
+      local outline = require("outline")
+
+      outline.setup()
+      wk.add({
+        { "@@o", group = "[o]utline." },
+        {
+          "@@os",
+          function()
+            outline.toggle()
+          end,
+          desc = "[o]utline [s]how/unshow.",
+        },
+        {
+          { "@@of", group = "[o]utline [f]ocus." },
+          { "@@ofo", ":OutlineFocusOutline<cr>", desc = "[o]utline [f]ocus [o]utline." },
+          { "@@ofc", ":OutlineFocusCode<cr>>", desc = "[o]utline [f]ocus [c]ode" },
+        },
+      })
+    end,
     opts = {
       providers = {
         priority = { "markdown", "lsp", "norg" },
