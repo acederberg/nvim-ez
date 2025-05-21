@@ -325,11 +325,35 @@ return {
       })
 
 
-
       -- Python
       local pkg = mason.get_package("debugpy")
       dap_python.test_runner = "pytest"
       dap_python.setup("python3") -- pkg:get_install_path() .. "/debugpy")
+
+      dap.adapters.python = {
+        type = 'server',
+        host = '127.0.0.1',
+        port = 5678,
+      }
+
+      dap.configurations.python[5] = {
+          type = 'python',
+          request = 'attach',
+          name = 'Attach to Docker',
+          connect = {
+            host = '127.0.0.1',
+            port = 5678,
+          },
+          mode = 'remote',
+          justMyCode = false,
+          pathMappings = {
+            {
+              localRoot = vim.fn.getcwd(),  -- or the root of your project on the host
+              remoteRoot = '/home/docker/app',          -- path inside the container
+            }
+          }
+      }
+
 
       -- Dotnet
       -- See https://aaronbos.dev/posts/debugging-csharp-neovim-nvim-dap

@@ -83,6 +83,7 @@ return {
     "williamboman/mason.nvim",
     config = function()
       require("mason").setup()
+
       local mason= require("mason-registry")
       local pkg = mason.get_package("debugpy")
       if (not pkg:is_installed()) then pkg:install() end
