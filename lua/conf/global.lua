@@ -15,3 +15,6 @@ vim.cmd([[
  	set nowrap
   autocmd FileType markdown setlocal spell
 ]])
+
+
+vim.filetype.add({ tf ="terraform"})

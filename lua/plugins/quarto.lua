@@ -1,5 +1,5 @@
 return {
-  { -- requires plugins in lua/plugins/treesitter.lua and lua/plugins/lsp.lua
+  --[[ { -- requires plugins in lua/plugins/treesitter.lua and lua/plugins/lsp.lua
     -- for complete functionality (language features)
     "quarto-dev/quarto-nvim",
     ft = { "quarto" },
@@ -34,7 +34,7 @@ return {
       -- added as a nvim-cmp source in lua/plugins/completion.lua
       "jmbuhr/otter.nvim",
     },
-  },
+  }, ]]
   {
     -- directly open ipynb files as quarto docuements
     -- and convert back behind the scenes

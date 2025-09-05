@@ -128,7 +128,7 @@ return {
           "ruff",
           "terraform-ls",
           "jupytext",
-          "yamlfmt",
+          -- "yamlfmt",
           "jq",
           -- "magick",
           "prettier", -- If you want plugins, they must be installed locallaly. https://github.com/williamboman/mason.nvim/issues/392
@@ -319,12 +319,6 @@ return {
         })
       end
 
-      if settings.languages.yaml then
-        lspconfig.yamlls.setup({
-          capabilities = capabilities,
-          flags = lsp_flags,
-        })
-      end
       if settings.languages.quarto then
         lspconfig.dotls.setup({
           capabilities = capabilities,
@@ -436,9 +430,22 @@ return {
       end
       capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
 
-      if settings.languages.python then
-        vim.print("blah blah blah")
+      if settings.languages.terraform then 
+        lspconfig.terraformls.setup({
+          capabilities=capabilities,
+          settings = {}
+        })
 
+        vim.api.nvim_create_autocmd({ "BufWritePre" }, {
+          pattern = { "*.tf", "*.tfvars" },
+          callback = function()
+            vim.lsp.buf.format()
+          end,
+        })
+      end
+
+
+      if settings.languages.python then
         -- lspconfig.ruff.setup({
         --   init_options = {
         --     settings = {
@@ -579,13 +586,6 @@ return {
       })
 
       require("cmp_git").setup()
-      require("lspconfig").terraformls.setup({})
-      vim.api.nvim_create_autocmd({ "BufWritePre" }, {
-        pattern = { "*.tf", "*.tfvars" },
-        callback = function()
-          vim.lsp.buf.format()
-        end,
-      })
 
       -- `/` cmdline setup.
       cmp.setup.cmdline({ "/", "?" }, {

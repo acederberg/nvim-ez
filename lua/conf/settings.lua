@@ -10,6 +10,7 @@
 --- html: boolean,
 --- lua: boolean,
 --- csharp: boolean,
+--- terraform: boolean,
 --- haskell: boolean,
 --- python: boolean,
 --- go: boolean }
@@ -31,8 +32,8 @@ local function default_settings()
       python = true,
       lua= true,
       css=true,
-  
       html=true,
+      terraform = true,
       go = false,
       prisma = false,
       csharp = false,
