@@ -244,6 +244,7 @@ return {
       vim.g.molten_image_provider = "image.nvim"
       vim.g.molten_output_win_max_height = 20
       vim.g.molten_auto_open_output = true
+      vim.print("Initializing molten.")
 
       wk.add({
         { "@@m", group = "[m]olten" },
@@ -251,8 +252,18 @@ return {
           "@@mi",
           function()
             local venv = os.getenv("VIRTUAL_ENV") -- or os.getenv("CONDA_PREFIX")
+            vim.print("Found venv at " .. venv)
+
             if venv ~= nil then
-              venv = string.match(venv, "/.+/(.+)")
+              -- NOTE: In the docs, this is done by matching the final path segment.
+              --       However, I tend to name my virtual envs `.venv` in their
+              --       respective project folders and generate the kernal
+              --       like `python -m ipykernal install --name "<name-of project folder>".
+              --       As a result, this pattern tries to capture the folder so that
+              --       the rest can find the kernal matching it.
+              venv = string.match(venv, "/.+/(.+)/.venv")
+
+              vim.print("Matched `venv=" .. venv .. "`.")
               vim.cmd(("MoltenInit %s"):format(venv))
             else
               vim.cmd("MoltenInit python3")
@@ -287,6 +298,20 @@ return {
           ":MoltenDeinit<CR>",
           desc = "[m]olten e[x]it.",
         },
+        {
+          "@@mk",
+          group = "[m]olten [k]ernal",
+          {
+            "@@mks",
+            ":MoltenSave<CR>",
+            desc = "[m]olten [k]ernal [s]ave",
+          },
+          {
+            "@@mkl",
+            ":MoltenLoad<CR>",
+            desc = "[m]olten [k]ernal [l]oad",
+          },
+        },
       })
     end,
   },
@@ -309,7 +334,7 @@ return {
           desc = "[o]utline [s]how/unshow.",
         },
         {
-          { "@@of", group = "[o]utline [f]ocus." },
+          { "@@of", desc = "[o]utline [f]ocus." },
           { "@@ofo", ":OutlineFocusOutline<cr>", desc = "[o]utline [f]ocus [o]utline." },
           { "@@ofc", ":OutlineFocusCode<cr>>", desc = "[o]utline [f]ocus [c]ode" },
         },

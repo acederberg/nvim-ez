@@ -20,6 +20,7 @@ return {
         dashboard.button("zv", " > Open a Terminal (Vertical)", ":vsplit term://zsh<cr>"),
         dashboard.button("gdo", " > Open Diffview", ":DiffviewOpen<CR>"),
         dashboard.button("gc", "󰜘 > Make a Commit", ":DiffviewOpen<CR>:Neogit commit<CR>ic"),
+        dashboard.button("aa", "󱇯 Ask GPT", ":AvanteAsk<CR>"),
         dashboard.button("q", "󰅚 > Quit NVIM", ":qa<CR>"),
       }
 

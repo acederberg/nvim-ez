@@ -298,26 +298,15 @@ return {
         settings = {
           yaml = {
             schemas = {
-              kubernetes = "*.yaml",
-              ["https://json.schemastore.org/github-workflow.json"] = "/.github/workflows/*",
-              -- ["../path/relative/to/file.yml"] = "/.github/workflows/*",
-              -- ["/path/from/root/of/project"] = "/.github/workflows/*",
+              ["https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.27.0-standalone-strict/all.json"] = "k8s*.yaml",
+              ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "compose.yaml",
             },
             schemaStore = {
-              enable = true,
-              url = "",
+              enable = false, -- disable built-in schema store to avoid applying unrelated schemas
             },
           },
         },
       })
-      -- lspconfig.ruff.setup({
-      --   init_options = {
-      --     settings = {
-      --       args = {},
-      --     },
-      --   },
-      -- })
-      -- lspconfig.mypy.setup({})
 
       lspconfig.dotls.setup({
         capabilities = capabilities,
