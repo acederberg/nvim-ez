@@ -7,6 +7,7 @@ return {
   config = function()
     local config = {
       ensure_installed = {
+        "cpp",
         "comment",
         "hcl",
         "python",

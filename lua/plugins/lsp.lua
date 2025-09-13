@@ -41,42 +41,7 @@ return {
       -- NOTE: For otter to appear under cmp status, a nested document must be
       --       loaded.
       local otter = require("otter")
-      otter.setup({
-        -- debug = true,
-        -- buffers = { write_to_disk = true, set_filetype = true },
-        -- verbose = { -- set to false to disable all verbose messages
-        --   no_code_found = true, -- warn if otter.activate is called, but no injected code was found
-        -- },
-      })
-      -- lsp = {
-      --   diagnostics_update_events = { "BuffWritePost" },
-      --   root_dir = function(_, bufnr)
-      --     return vim.fs.root(bufnr or 0, {
-      --       ".git",
-      --       "_quarto.yml",
-      --       "package.json",
-      --     }) or vim.fn.getcwd(0)
-      --   end,
-      -- },
-      -- buffers = {
-      --   set_filetype = true,
-      --   write_to_disk = false,
-      -- },
-      -- handle_leading_whitespace = true,
-
-      -- NOTE: From the readme. This can be used to show the current languages
-      --       in the raft.
-      local function get_otter_symbols_lang()
-        local otterkeeper = require("otter.keeper")
-        local main_nr = vim.api.nvim_get_current_buf()
-        local langs = {}
-        for i, l in ipairs(otterkeeper.rafts[main_nr].languages) do
-          langs[i] = i .. ": " .. l
-        end
-        vim.print("langs", langs)
-      end
-
-      -- vim.keymap.set("n", "@@ps", get_otter_symbols_lang, { desc = "otter [s]ymbols" })
+      otter.setup({})
     end,
   },
   {
@@ -129,6 +94,7 @@ return {
           "terraform-ls",
           "jupytext",
           -- "yamlfmt",
+          "clangd",
           "jq",
           -- "magick",
           "prettier", -- If you want plugins, they must be installed locallaly. https://github.com/williamboman/mason.nvim/issues/392
@@ -372,6 +338,11 @@ return {
       if settings.languages.csharp then
         lspconfig.csharp_ls.setup({})
       end
+
+      lspconfig.clangd.setup({
+        cmd={"nc", "localhost", "2087"},
+        capabilities = capabilities,
+      })
 
       -- turning this on breaks python diagnostics in nvim.
       -- lspconfig.pylsp.setup({
