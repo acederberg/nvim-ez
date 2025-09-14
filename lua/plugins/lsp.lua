@@ -80,6 +80,15 @@ return {
     end,
   },
   {
+    "williamboman/mason.nvim",
+    config = function()
+      require("mason").setup()
+      local mason= require("mason-registry")
+      local pkg = mason.get_package("debugpy")
+      if (not pkg:is_installed()) then pkg:install() end
+    end
+  },
+  {
     "neovim/nvim-lspconfig",
     -- tag="v0.1.9",
     dependencies = {
@@ -100,11 +109,13 @@ return {
       -------------------------------------------------------------------------
       -- NOTE: Install dependencies.
       local wk = require("which-key")
+      local settings = require("conf.settings").default_settings()
 
-      require("mason").setup()
-      require("mason-lspconfig").setup({
-        automatic_installation = true,
-      })
+
+      -- vim.print(settings.default_settings())
+      -- vim.print(settings)
+
+      require("mason-lspconfig").setup({ automatic_installation = true });
       require("mason-tool-installer").setup({
         ensure_installed = {
           "mypy",
@@ -237,32 +248,34 @@ return {
       local capabilities = cmp_nvim_lsp.default_capabilities()
       capabilities.textDocument.completion.completionItem.snippetSupport = true
 
-      lspconfig.lua_ls.setup({
-        capabilities = capabilities,
-        flags = lsp_flags,
-        settings = {
-          Lua = {
-            completion = {
-              callSnippet = "Replace",
-            },
-            runtime = {
-              version = "LuaJIT",
-              -- plugin = lua_plugin_paths,
-            },
-            diagnostics = {
-              globals = { "vim", "quarto", "pandoc", "io", "string", "print", "require", "table" },
-              disable = { "trailing-space" },
-            },
-            workspace = {
-              -- library = lua_library_files,
-              checkThirdParty = false,
-            },
-            telemetry = {
-              enable = false,
+      if settings.languages.lua then
+        lspconfig.lua_ls.setup({
+          capabilities = capabilities,
+          flags = lsp_flags,
+          settings = {
+            Lua = {
+              completion = {
+                callSnippet = "Replace",
+              },
+              runtime = {
+                version = "LuaJIT",
+                -- plugin = lua_plugin_paths,
+              },
+              diagnostics = {
+                globals = { "vim", "quarto", "pandoc", "io", "string", "print", "require", "table" },
+                disable = { "trailing-space" },
+              },
+              workspace = {
+                -- library = lua_library_files,
+                checkThirdParty = false,
+              },
+              telemetry = {
+                enable = false,
+              },
             },
           },
-        },
-      })
+        })
+      end
 
       lspconfig.bashls.setup({
         capabilities = capabilities,
@@ -270,31 +283,51 @@ return {
         filetypes = { "sh", "bash" },
       })
 
-      lspconfig.cssls.setup({
-        capabilities = capabilities,
-        flags = lsp_flags,
+      if settings.languages.haskell then
+      require("lspconfig")["hls"].setup({
+        filetypes = { "haskell", "lhaskell", "cabal" },
       })
+      end
 
-      lspconfig.html.setup({
-        capabilities = capabilities,
-        flags = lsp_flags,
-      })
+      if settings.languages.css then
+        lspconfig.cssls.setup({
+          capabilities = capabilities,
+          flags = lsp_flags,
+        })
+        lspconfig.somesass_ls.setup({})
+      end
 
-      lspconfig.emmet_language_server.setup({
-        capabilities = capabilities,
-        flags = lsp_flags,
-      })
+      if settings.languages.html then
+        lspconfig.html.setup({
+          capabilities = capabilities,
+          flags = lsp_flags,
+        })
+        lspconfig.emmet_language_server.setup({
+          capabilities = capabilities,
+          flags = lsp_flags,
+        })
 
-      lspconfig.marksman.setup({
-        capabilities = capabilities,
-        lsp_flags = lsp_flags,
-        filetypes = { "markdown", "quarto" },
-        root_dir = util.root_pattern(".git", ".marksman.toml", "_quarto.yml"),
-      })
+      end
 
-      lspconfig.yamlls.setup({
-        capabilities = capabilities,
-        flags = lsp_flags,
+      if settings.languages.markdown or settings.languages.quarto  then
+        lspconfig.marksman.setup({
+          capabilities = capabilities,
+          lsp_flags = lsp_flags,
+          filetypes = { "markdown", "quarto" },
+          root_dir = util.root_pattern(".git", ".marksman.toml", "_quarto.yml"),
+        })
+      end
+
+      if settings.languages.yaml then
+        lspconfig.yamlls.setup({
+          capabilities = capabilities,
+          flags = lsp_flags,
+        })
+      end
+      if settings.languages.quarto then
+        lspconfig.dotls.setup({
+          capabilities = capabilities,
+          flags = lsp_flags,
         settings = {
           yaml = {
             schemas = {
@@ -306,39 +339,44 @@ return {
             },
           },
         },
-      })
+        })
+      end
 
-      lspconfig.dotls.setup({
-        capabilities = capabilities,
-        flags = lsp_flags,
-      })
+      if settings.languages.typescript then
+        lspconfig.ts_ls.setup({
+          capabilities = capabilities,
+          flags = lsp_flags,
+          filetypes = { "js", "javascript", "typescript", "ojs", "typescriptreact" },
+        })
+      end
 
-      lspconfig.ts_ls.setup({
-        capabilities = capabilities,
-        flags = lsp_flags,
-        filetypes = { "js", "javascript", "typescript", "ojs", "typescriptreact" },
-      })
 
-      lspconfig.prismals.setup({})
+      if settings.languages.prisma then
+        lspconfig.prismals.setup({})
+      end
 
-      lspconfig.gopls.setup({
-        -- on_attach = on_attach,
-        capabilities = capabilities,
-        cmd = { "gopls" },
-        filetypes = { "go", "gomod", "gowork", "gotmpl" },
-        root_dir = util.root_pattern("go.work", "go.mod", ".git"),
-        settings = {
-          gopls = {
-            completeUnimported = true,
-            usePlaceholders = true,
-            analyses = {
-              unusedparams = true,
+      if settings.languages.go then
+        lspconfig.gopls.setup({
+          -- on_attach = on_attach,
+          capabilities = capabilities,
+          cmd = { "gopls" },
+          filetypes = { "go", "gomod", "gowork", "gotmpl" },
+          root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+          settings = {
+            gopls = {
+              completeUnimported = true,
+              usePlaceholders = true,
+              analyses = {
+                unusedparams = true,
+              },
             },
           },
-        },
-      })
+        })
+      end
 
-      lspconfig.csharp_ls.setup({})
+      if settings.languages.csharp then
+        lspconfig.csharp_ls.setup({})
+      end
 
       -- turning this on breaks python diagnostics in nvim.
       -- lspconfig.pylsp.setup({
@@ -389,31 +427,44 @@ return {
       -- disable lsp watcher.
       -- Too lags on linux for python projects
       -- because pyright and nvim both create too many watchers otherwise
+
+      lspconfig.somesass_ls.setup({})
       if capabilities.workspace == nil then
         capabilities.workspace = {}
         capabilities.workspace.didChangeWatchedFiles = {}
       end
       capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
 
-      lspconfig.pyright.setup({
-        capabilities = capabilities,
-        flags = lsp_flags,
-        settings = {
-          python = {
-            analysis = {
-              autoSearchPaths = true,
-              useLibraryCodeForTypes = true,
-              diagnosticMode = "workspace",
+      if settings.languages.python then
+        vim.print("blah blah blah")
+
+        -- lspconfig.ruff.setup({
+        --   init_options = {
+        --     settings = {
+        --       args = {},
+        --     },
+        --   },
+        -- })
+        -- lspconfig.mypy.setup({})
+
+        lspconfig.pyright.setup({
+          capabilities = capabilities,
+          flags = lsp_flags,
+          settings = {
+            python = {
+              analysis = {
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+                diagnosticMode = "workspace",
+              },
             },
           },
-        },
-        root_dir = function(fname)
-          return util.root_pattern(".git", "setup.py", "setup.cfg", "pyproject.toml", "requirements.txt")(fname)
-            or util.path.dirname(fname)
-        end,
-      })
-
-      lspconfig.somesass_ls.setup({})
+          root_dir = function(fname)
+            return util.root_pattern(".git", "setup.py", "setup.cfg", "pyproject.toml", "requirements.txt")(fname)
+              or util.fs.dirname(fname)
+          end,
+        })
+      end
     end,
   },
   -------------------------------------------------------------------------
@@ -526,9 +577,6 @@ return {
         }),
       })
 
-      require("lspconfig")["hls"].setup({
-        filetypes = { "haskell", "lhaskell", "cabal" },
-      })
       require("cmp_git").setup()
       require("lspconfig").terraformls.setup({})
       vim.api.nvim_create_autocmd({ "BufWritePre" }, {
@@ -579,7 +627,7 @@ return {
   --           enable = true,
   --           enable_editor_config_support = true,
   --           organize_imports = true,
-  --           load_projects_on_demand = false,
+  --           load_projects_on_demand = false,conf
   --           enable_analyzers_support = true,
   --           enable_import_completion = true,
   --           include_prerelease_sdks = true,

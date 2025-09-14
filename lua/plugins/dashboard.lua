@@ -311,16 +311,25 @@ return {
     "mfussenegger/nvim-dap",
     dependencies = {
       "mfussenegger/nvim-dap-python",
+      "williamboam/mason.nvim",
       "folke/which-key.nvim",
+      "theHamsta/nvim-dap-virtual-text"
     },
     config = function()
       local dap = require("dap")
       local dap_python = require("dap-python")
       local wk = require("which-key")
+      local mason= require("mason-registry")
+      require("nvim-dap-virtual-text").setup({
+        commented = true, -- Show virtual text alongside comment
+      })
+
+
 
       -- Python
+      local pkg = mason.get_package("debugpy")
       dap_python.test_runner = "pytest"
-      dap_python.setup("python3.11")
+      dap_python.setup("python3") -- pkg:get_install_path() .. "/debugpy")
 
       -- Dotnet
       -- See https://aaronbos.dev/posts/debugging-csharp-neovim-nvim-dap
@@ -358,18 +367,32 @@ return {
             mode = "n",
           },
           {
-            "@@Dc",
-            function()
-              dap.continue()
-            end,
+            "@@De", ":DapNew<CR>",
+            desc="[D]ebug [e]nter.",
+            mode="n"
+          },
+          {
+            "@@Dx", ":DapTerminate<CR>",
+            desc="[D]ebug e[x]it.",
+            mode="n"
+          },
+          {
+            "@@Dn", ":DapStepOver<CR>",
+            desc="[D]ebug [n]ext breakpoint.",
+            mode="n"
+          },
+          {
+            "@@Ds", ":DapStepInto<CR>",
+            desc="[D]ebug [s]tep to next line.",
+            mode="n"
+          },
+          {
+            "@@Dc", ":DapContinue<CR>",
             desc = "[D]ebug [c]ontinue.",
             mode = "n",
           },
           {
-            "@@Dx",
-            function()
-              dap.terminate()
-            end,
+            "@@Dx", ":DapTerminate<CR>",
             desc = "[D]ebug e[x]it.",
             mode = "n",
           },
@@ -384,6 +407,40 @@ return {
 
       -- Integrations with neotest.
     end,
+  },
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"},
+    config = function()
+      local dapui = require("dapui")
+      local dap = require("dap")
+      local wk = require("which-key")
+
+      dapui.setup{}
+
+      dap.listeners.before.attach.dapui_config = function()
+        dapui.open()
+      end
+      dap.listeners.before.launch.dapui_config = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated.dapui_config = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited.dapui_config = function()
+        dapui.close()
+      end
+
+      wk.add({
+        {
+          { "@@D", group = "[D]ebug." },
+          {
+            "@@DU", function() dapui.toggle() end,  desc="[D]ebug [U]I toggle."
+          }
+        }
+      })
+
+    end
   },
   {
     "folke/which-key.nvim",
