@@ -49,10 +49,12 @@ return {
     config = function()
       require("mason").setup()
 
-      local mason= require("mason-registry")
+      local mason = require("mason-registry")
       local pkg = mason.get_package("debugpy")
-      if (not pkg:is_installed()) then pkg:install() end
-    end
+      if not pkg:is_installed() then
+        pkg:install()
+      end
+    end,
   },
   {
     "neovim/nvim-lspconfig",
@@ -77,11 +79,10 @@ return {
       local wk = require("which-key")
       local settings = require("conf.settings").default_settings()
 
-
       -- vim.print(settings.default_settings())
       -- vim.print(settings)
 
-      require("mason-lspconfig").setup({ automatic_installation = true });
+      require("mason-lspconfig").setup({ automatic_installation = true })
       require("mason-tool-installer").setup({
         ensure_installed = {
           "mypy",
@@ -251,9 +252,9 @@ return {
       })
 
       if settings.languages.haskell then
-      require("lspconfig")["hls"].setup({
-        filetypes = { "haskell", "lhaskell", "cabal" },
-      })
+        require("lspconfig")["hls"].setup({
+          filetypes = { "haskell", "lhaskell", "cabal" },
+        })
       end
 
       if settings.languages.css then
@@ -273,10 +274,9 @@ return {
           capabilities = capabilities,
           flags = lsp_flags,
         })
-
       end
 
-      if settings.languages.markdown or settings.languages.quarto  then
+      if settings.languages.markdown or settings.languages.quarto then
         lspconfig.marksman.setup({
           capabilities = capabilities,
           lsp_flags = lsp_flags,
@@ -289,17 +289,25 @@ return {
         lspconfig.dotls.setup({
           capabilities = capabilities,
           flags = lsp_flags,
-        settings = {
-          yaml = {
-            schemas = {
-              ["https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.27.0-standalone-strict/all.json"] = "k8s*.yaml",
-              ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "compose.yaml",
-            },
-            schemaStore = {
-              enable = false, -- disable built-in schema store to avoid applying unrelated schemas
+          settings = {
+            yaml = {
+              schemas = {
+                ["https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.27.0-standalone-strict/all.json"] = "k8s*.yaml",
+                ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = {
+                  "compose.yaml",
+                  "compose.*.yaml",
+                  "_compose.*.yaml",
+                },
+                ["https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/traefik-v3-file-provider.json"] = {
+                  "traefik.ya?ml",
+                  "traefik.*.ya?ml",
+                },
+              },
+              schemaStore = {
+                enable = false, -- disable built-in schema store to avoid applying unrelated schemas
+              },
             },
           },
-        },
         })
       end
 
@@ -310,7 +318,6 @@ return {
           filetypes = { "js", "javascript", "typescript", "ojs", "typescriptreact" },
         })
       end
-
 
       if settings.languages.prisma then
         lspconfig.prismals.setup({})
@@ -340,7 +347,7 @@ return {
       end
 
       lspconfig.clangd.setup({
-        cmd={"nc", "localhost", "2087"},
+        cmd = { "nc", "localhost", "2087" },
         capabilities = capabilities,
       })
 
@@ -401,10 +408,10 @@ return {
       end
       capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
 
-      if settings.languages.terraform then 
+      if settings.languages.terraform then
         lspconfig.terraformls.setup({
-          capabilities=capabilities,
-          settings = {}
+          capabilities = capabilities,
+          settings = {},
         })
 
         vim.api.nvim_create_autocmd({ "BufWritePre" }, {
@@ -414,7 +421,6 @@ return {
           end,
         })
       end
-
 
       if settings.languages.python then
         -- lspconfig.ruff.setup({
