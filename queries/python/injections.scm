@@ -46,7 +46,7 @@
     arguments: (argument_list
                  (string (string_content) @injection.content)))
 
-  (#set! injection.language "rst"))
+  (#set! injection.language "md"))
 
 
 ; pydantic.Field
