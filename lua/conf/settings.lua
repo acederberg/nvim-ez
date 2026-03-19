@@ -1,5 +1,3 @@
-
-
 ---@alias LanguagesSettings {
 --- quarto: boolean,
 --- yaml: boolean,
@@ -8,6 +6,7 @@
 --- prisma: boolean,
 --- css: boolean,
 --- html: boolean,
+--- json: boolean,
 --- lua: boolean,
 --- csharp: boolean,
 --- terraform: boolean,
@@ -20,9 +19,8 @@
 
 ---@alias Settings { languages: LanguagesSettings, features: FeaturesSettings }
 
-
 ---@return Settings
-local function default_settings() 
+local function default_settings()
   return {
     languages = {
       quarto = true,
@@ -30,20 +28,19 @@ local function default_settings()
       markdown = true,
       typescript = true,
       python = true,
-      lua= true,
-      css=true,
-      html=true,
+      lua = true,
+      css = true,
+      json = true,
+      html = true,
       terraform = true,
       go = false,
       prisma = false,
       csharp = false,
       haskell = false,
     },
-    features = {}
+    features = {},
   }
 end
-
-
 
 ---@param settings Settings
 ---@return Settings
@@ -52,10 +49,6 @@ local function handle_settings(settings)
   -- return vim.tbl_deep_extend('error', default_settings(), settings)
 end
 
-
 -- local settings = handle_settings({})
-
-
-
 
 return { default_settings = default_settings, handle_settings = handle_settings }

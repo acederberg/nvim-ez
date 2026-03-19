@@ -54,6 +54,7 @@ return {
         },
         formatters_by_ft = {
           html = { "prettier" },
+          css = { "prettier" },
           lua = { "mystylua" },
           python = { "isort", "black" },
           quarto = { "injected", "prettier" },
