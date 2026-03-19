@@ -15,6 +15,7 @@ return {
       })
     end,
     dependencies = {
+      -- TODO: Audit all of these dependencies.
       "nvim-lua/plenary.nvim",
       "MunifTanjim/nui.nvim",
       --- The below dependencies are optional,
@@ -43,6 +44,7 @@ return {
     config = function()
       local wk = require("which-key")
       local renderMd = require("render-markdown")
+      renderMd.disable()
 
       wk.add({
         {

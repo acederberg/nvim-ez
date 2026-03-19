@@ -1,3 +1,43 @@
+--- When attaching to lua buffers, make lua_lsp aware of the quarto globals.
+vim.api.nvim_create_autocmd("LspAttach", {
+  pattern = "lua",
+  callback = function()
+    local function get_quarto_resource_path()
+      local function strsplit(s, delimiter)
+        local result = {}
+        for match in (s .. delimiter):gmatch("(.-)" .. delimiter) do
+          table.insert(result, match)
+        end
+        return result
+      end
+
+      local f = assert(io.popen("quarto --paths", "r"))
+      local s = assert(f:read("*a"))
+      f:close()
+      return strsplit(s, "\n")[2]
+    end
+
+    local lua_library_files = vim.api.nvim_get_runtime_file("", true)
+    local lua_plugin_paths = {}
+    local resource_path = get_quarto_resource_path()
+
+    vim.print(resource_path)
+    if resource_path == nil then
+      vim.notify_once("quarto not found, lua library files not loaded")
+    else
+      table.insert(lua_library_files, resource_path .. "/lua-types")
+      table.insert(lua_plugin_paths, resource_path .. "/lua-plugin/plugin.lua")
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "quarto", "html", "markdown" },
+  callback = function()
+    require("otter").activate()
+  end,
+})
+
 return {
   { -- requires plugins in lua/plugins/treesitter.lua and lua/plugins/lsp.lua
     -- for complete functionality (language features)
@@ -41,6 +81,7 @@ return {
     -- needs:
     -- pip install jupytext
     "GCBallesteros/jupytext.nvim",
+    ft = { "ipynb" },
     opts = {
       custom_language_formatting = {
         python = {
@@ -233,6 +274,7 @@ return {
   },
   {
     "benlubas/molten-nvim",
+    ft = { "quarto" },
     dependencies = {
       "folke/which-key.nvim",
     },
@@ -244,7 +286,6 @@ return {
       vim.g.molten_image_provider = "image.nvim"
       vim.g.molten_output_win_max_height = 20
       vim.g.molten_auto_open_output = true
-      vim.print("Initializing molten.")
 
       wk.add({
         { "@@m", group = "[m]olten" },
@@ -314,45 +355,5 @@ return {
         },
       })
     end,
-  },
-  { -- show tree of symbols in the current file
-    "hedyhli/outline.nvim",
-    dependencies = { "folke/which-key.nvim" },
-    -- cmd = "Outline",
-    config = function()
-      local wk = require("which-key")
-      local outline = require("outline")
-
-      outline.setup()
-      wk.add({
-        { "@@o", group = "[o]utline." },
-        {
-          "@@os",
-          function()
-            outline.toggle()
-          end,
-          desc = "[o]utline [s]how/unshow.",
-        },
-        {
-          { "@@of", desc = "[o]utline [f]ocus." },
-          { "@@ofo", ":OutlineFocusOutline<cr>", desc = "[o]utline [f]ocus [o]utline." },
-          { "@@ofc", ":OutlineFocusCode<cr>>", desc = "[o]utline [f]ocus [c]ode" },
-        },
-      })
-    end,
-    opts = {
-      providers = {
-        priority = { "markdown", "lsp", "norg" },
-        -- Configuration for each provider (3rd party providers are supported)
-        lsp = {
-          -- Lsp client names to ignore
-          blacklist_clients = {},
-        },
-        markdown = {
-          -- List of supported ft's to use the markdown provider
-          filetypes = { "markdown", "quarto" },
-        },
-      },
-    },
   },
 }

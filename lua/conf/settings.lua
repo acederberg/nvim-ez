@@ -24,6 +24,7 @@ local function default_settings()
   return {
     languages = {
       quarto = true,
+      sass = true,
       yaml = true,
       markdown = true,
       typescript = true,
