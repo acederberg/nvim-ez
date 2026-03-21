@@ -307,7 +307,7 @@ return {
     opts = {},
     config = function()
       local tw = require("twilight")
-      tw.enable()
+      tw.disable()
       require("which-key").add({
         { "@@tw", group = "[tw]ighlight" },
         { "@@twe", tw.enable, desc = "[tw]ighlight [e]nable" },
