@@ -60,6 +60,7 @@ return {
       "j-hui/fidget.nvim",
       "folke/lazydev.nvim",
       "folke/which-key.nvim",
+      "b0o/SchemaStore.nvim",
       -- "folke/neoconf",
     },
     config = function()
@@ -268,27 +269,45 @@ return {
       end
 
       if settings.languages.quarto then
-        vim.lsp.config("dotls", {
+        vim.lsp.config("dotls", {})
+      end
+
+      if settings.languages.xml then
+        vim.lsp.config("lemminx", {})
+      end
+
+      if settings.languages.yaml then
+        --[[ ["https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.27.0-standalone-strict/all.json"] = "k8s*.yaml",
+              ["https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/traefik-v3-file-provider.json"] = {
+                "traefik.ya?ml",
+                "traefik.*.ya?ml",
+              }, ]]
+
+        vim.lsp.config("yaml", {
           capabilities = capabilities,
           flags = lsp_flags,
           settings = {
             yaml = {
-              schemas = {
-                ["https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/v1.27.0-standalone-strict/all.json"] = "k8s*.yaml",
+              schemas = require("schemastore").yaml.schemas({
                 ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = {
                   "compose.yaml",
                   "compose.*.yaml",
                   "_compose.*.yaml",
                 },
-                ["https://raw.githubusercontent.com/SchemaStore/schemastore/refs/heads/master/src/schemas/json/traefik-v3-file-provider.json"] = {
-                  "traefik.ya?ml",
-                  "traefik.*.ya?ml",
-                },
-              },
+              }),
               schemaStore = {
                 enable = false, -- disable built-in schema store to avoid applying unrelated schemas
               },
             },
+          },
+        })
+      end
+
+      if settings.languages.json then
+        vim.lsp.config("jsonls", {
+          capabilities = capabilities,
+          settings = {
+            schemas = require("schemastore").json.schemas(),
           },
         })
       end
@@ -354,6 +373,10 @@ return {
             vim.lsp.buf.format()
           end,
         })
+      end
+
+      if settings.languages.xml then
+        vim.lsp.config("xml", {})
       end
 
       -- See https://github.com/neovim/neovim/issues/23291

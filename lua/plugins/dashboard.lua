@@ -316,4 +316,9 @@ return {
       })
     end,
   },
+  --- Tried it, but I don't think I need it. Twilight does what I need out of this.
+  --[[ {
+    "folke/zen-mode.nvim",
+    opts = {},
+  }, ]]
 }

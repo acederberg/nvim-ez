@@ -42,6 +42,7 @@ return {
           "jupytext",
           "clangd",
           "jq",
+          "lemminx",
           "prettier",
         },
       })

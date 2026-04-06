@@ -182,6 +182,15 @@ end
 vim.api.nvim_set_hl(0, "@comment.python.quarto_metadata", { fg = "#d3869b" })
 vim.api.nvim_set_hl(0, "@comment.mermaid.quarto_metadata", { fg = "#d3869b" })
 vim.api.nvim_set_hl(0, "@fence", { fg = "#dc322f", italic = true })
+vim.api.nvim_set_hl(0, "@variable.jinja", {
+  fg = "#fe8019",
+  bold = false,
+  italic = false,
+})
+vim.api.nvim_set_hl(0, "@render_expression.jinja", {
+  bg = "#002b36",
+})
+
 codefence({
   {
     codefence_language = "quarto",

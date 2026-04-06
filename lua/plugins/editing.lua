@@ -62,6 +62,7 @@ return {
           yaml = { "yamlfmt" },
           toml = { "prettier" },
           md = { "injected", "prettier" },
+          xml = { "xmllint" },
         },
         formatters = {
           mystylua = {

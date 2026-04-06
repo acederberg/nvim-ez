@@ -23,6 +23,7 @@
 local function default_settings()
   return {
     languages = {
+      xml = true,
       quarto = true,
       sass = true,
       yaml = true,

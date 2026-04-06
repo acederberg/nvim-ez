@@ -10,6 +10,8 @@ return {
         "cpp",
         "comment",
         "hcl",
+        "jinja",
+        "jinja_inline",
         "python",
         "markdown",
         "markdown_inline",
