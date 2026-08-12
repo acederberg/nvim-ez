@@ -10,6 +10,7 @@ return {
         "cpp",
         "comment",
         "hcl",
+        "jsdoc",
         "jinja",
         "jinja_inline",
         "python",

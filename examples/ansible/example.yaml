@@ -1,0 +1,11 @@
+# vi: set ft=yaml.ansible :
+#
+- name: "Ping hosts"
+  hosts: all
+  vars:
+    say: "It works!"
+  tasks:
+    - name: "Do it."
+      ansible.builtin.ping:
+        # The template text should be hightlighted like jinja in an orange foreground with a different colored background.
+        data: "{{ say }}"
