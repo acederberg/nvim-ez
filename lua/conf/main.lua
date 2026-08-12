@@ -182,13 +182,21 @@ end
 vim.api.nvim_set_hl(0, "@comment.python.quarto_metadata", { fg = "#d3869b" })
 vim.api.nvim_set_hl(0, "@comment.mermaid.quarto_metadata", { fg = "#d3869b" })
 vim.api.nvim_set_hl(0, "@fence", { fg = "#dc322f", italic = true })
+
 vim.api.nvim_set_hl(0, "@variable.jinja", {
   fg = "#fe8019",
   bold = false,
   italic = false,
 })
+
 vim.api.nvim_set_hl(0, "@render_expression.jinja", {
   bg = "#002b36",
+})
+vim.api.nvim_set_hl(0, "@render_expression.jinja_inner", {
+  fg = "#fe8019",
+  bold = true,
+  italic = true,
+  bg = "#073642",
 })
 
 codefence({
@@ -222,4 +230,43 @@ codefence({
     include_delim = true,
     codefence_language = "mermaid",
   },
+})
+
+-------------------------------------------------------------------------------
+---
+--- Line numbers
+---
+--- Should become absolute upon change of focus.
+--
+-- https://jeffkreeftmeijer.com/vim-number/
+--
+--- vim.opt.relativenumber = true
+---
+vim.opt.number = true
+
+vim.api.nvim_create_augroup("numbertoggle", { clear = true })
+
+vim.api.nvim_create_autocmd({ "BufEnter", "FocusGained", "InsertLeave", "WinEnter" }, {
+  group = "numbertoggle",
+  callback = function()
+    if vim.opt.number:get() and vim.api.nvim_get_mode().mode ~= "i" then
+      vim.opt.relativenumber = true
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "InsertEnter", "WinLeave" }, {
+  group = "numbertoggle",
+  callback = function()
+    if vim.opt.number:get() then
+      vim.opt.relativenumber = false
+    end
+  end,
+})
+
+vim.api.nvim_create_autocmd({ "FileType" }, {
+  pattern = "yaml",
+  callback = function()
+    vim.opt.cursorcolumn = true
+  end,
 })

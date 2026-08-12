@@ -1,4 +1,19 @@
 return {
+  --[[ 
+  -- I like this, but it makes `newtab` not use the builtin directory explorer.
+  -- I find this frustrating for opening up new tabs.
+  ]]
+  -- {
+  --   "nvim-tree/nvim-tree.lua",
+  --   version = "*",
+  --   lazy = false,
+  --   dependencies = {
+  --     "nvim-tree/nvim-web-devicons",
+  --   },
+  --   config = function()
+  --     require("nvim-tree").setup({})
+  --   end,
+  -- },
   -----------------------------------------------------------------------------
   ---
   --- Opening screen keyboard shortcuts and ASCII art.

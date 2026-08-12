@@ -73,5 +73,36 @@
   (#set! injection.language "yaml")
 )
 
+; Because ansible modules expect this.
+(
+ (
+  assignment
+  left: (identifier) @_temporary
+  right: (string
+    (string_start)
+    (string_content) @injection.content
+    (string_end)
+  )
+ )
+ (#eq? @_temporary "DOCUMENTATION" )
+ (#set! injection.language "yaml")
+)
+
+; Because ansible modules expect this.
+(
+ (
+  assignment
+  left: (identifier) @_temporary
+  right: (string
+    (string_start)
+    (string_content) @injection.content
+    (string_end)
+  )
+ )
+ (#eq? @_temporary "RETURN" )
+ (#set! injection.language "yaml")
+)
+
+
 
 
